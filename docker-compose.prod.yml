@@ -1,0 +1,17 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    environment:
+      DATABASE_URL: "postgresql://webbooks:webbooks@db:5432/webbooks"
+      NODE_ENV: production
+    command: node dist/index.js
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    command: []

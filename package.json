@@ -1,0 +1,16 @@
+{
+  "name": "webbooks",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:local": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npx tsx watch src/index.ts",
+    "dev:client": "cd client && npx vite",
+    "build": "docker compose -f docker-compose.yml -f docker-compose.prod.yml build",
+    "db:migrate": "cd server && npx prisma migrate dev",
+    "db:studio": "cd server && npx prisma studio"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: webbooks
+      POSTGRES_PASSWORD: webbooks
+      POSTGRES_DB: webbooks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "file:./dev.db"
+      BOOKS_DIR: /books
+      PORT: 3001
+      NODE_ENV: development
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+      - ${BOOKS_DIR:-./books}:/books:ro
+      - ./cache:/app/cache
+    depends_on:
+      - db
+    command: npx tsx watch src/index.ts
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3001
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    command: npx vite --host 0.0.0.0
+
+volumes:
+  pgdata:

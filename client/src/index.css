@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-app: #F5F5F7;
+  --color-bg-sidebar: #FAFAFA;
+  --color-border: #E0E0E0;
+  --color-text-primary: #1D1D1F;
+  --color-text-secondary: #6E6E73;
+  --color-accent: #0071E3;
+
+  --color-highlight-yellow: #FFF176;
+  --color-highlight-green: #A5D6A7;
+  --color-highlight-blue: #90CAF9;
+  --color-highlight-pink: #F48FB1;
+}

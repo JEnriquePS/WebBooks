@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id              String    @id @default(uuid())
+  title           String
+  author          String?
+  description     String?
+  fileName        String
+  filePath        String    @unique
+  totalPages      Int?
+  fileSize        BigInt
+  thumbnailPath   String?
+  customCoverPath String?
+  coverColor      String?
+  folder          String    @default("")
+  isFavorite      Boolean   @default(false)
+
+  // PDF metadata (read-only, extracted from PDF)
+  pdfTitle        String?
+  pdfAuthor       String?
+  pdfSubject      String?
+  pdfKeywords     String?
+  pdfCreator      String?
+  pdfProducer     String?
+  pdfCreationDate String?
+  pdfModDate      String?
+  year            Int?
+  addedAt         DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  annotations     Annotation[]
+  readingProgress ReadingProgress?
+  bookTags        BookTag[]
+
+  @@map("books")
+}
+
+model Annotation {
+  id           String   @id @default(uuid())
+  bookId       String
+  pageNumber   Int
+  selectedText String
+  note         String?
+  color        String
+  positionData String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([bookId, pageNumber])
+  @@map("annotations")
+}
+
+model ReadingProgress {
+  id             String   @id @default(uuid())
+  bookId         String   @unique
+  currentPage    Int      @default(1)
+  scrollOffset   Float    @default(0)
+  isFinished     Boolean  @default(false)
+  readingTimeSec Int      @default(0)
+  lastReadAt     DateTime @default(now())
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@map("reading_progress")
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  color    String
+  bookTags BookTag[]
+
+  @@map("tags")
+}
+
+model BookTag {
+  bookId String
+  tagId  String
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, tagId])
+  @@map("book_tags")
+}
